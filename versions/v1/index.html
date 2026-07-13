@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Draw Survivors</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="hud">
+    <div class="topbar">
+      <div class="hudbox">
+        <div class="hp-row"><span>生命</span><span id="hpText">100 / 100</span></div><div class="bar"><div id="hpFill" class="fill"></div></div>
+        <div class="xp-row" style="margin-top:10px"><span id="levelText">等级 1</span><span id="xpText">0 / 8</span></div><div class="bar xp"><div id="xpFill" class="fill"></div></div>
+      </div>
+      <div class="hudbox clock"><strong id="clock">30:00</strong><span id="nextBoss">下一Boss 05:00</span></div>
+      <div class="hudbox stats" id="stats"></div>
+    </div>
+    <div id="deck" class="hudbox"><div class="deck-title"><b>攻击池</b><span id="deckTotal"></span></div><div id="deckList"></div></div>
+    <div id="bossWarning" class="boss-warning hidden"></div>
+    <div id="drawHand" aria-label="本轮抽牌"></div>
+    <div class="bottom"><div class="hint">WASD / 方向键移动 · Esc 暂停</div><div class="floating-controls"><button id="speedBtn">时间 ×1</button><button id="pauseBtn">暂停</button></div></div>
+  </div>
+
+  <div id="levelModal" class="modal-wrap hidden"><div class="modal"><div class="modal-head"><h2>升级三选一</h2><p>新攻击按稀有度获得初始权重；重复选择则进一步提高抽取概率。</p></div><div id="choices" class="choices"></div><div id="rerollSlot"></div></div></div>
+  <div id="pauseModal" class="modal-wrap hidden"><div class="modal result pause-panel"><div class="eyebrow">牌局暂停</div><h2>PAUSED</h2><p>当前齐射配置</p><div class="pause-slot-head"><span>抽取槽位</span><b id="pauseDrawMeta">2 SLOT</b></div><div id="pauseSlots"></div><div class="pause-rule">每个槽位每轮抽取1张攻击；同轮优先不重复。击败Boss或获得相关被动可增加槽位。</div><button id="resumeBtn" class="primary">继续战斗 <small>ESC</small></button></div></div>
+  <div id="resultModal" class="modal-wrap hidden"><div class="modal result"><div class="eyebrow" id="resultEyebrow">牌局结束</div><h2 id="resultTitle">再接再厉</h2><p id="resultStats"></p><button id="againBtn" class="primary">返回版本选择</button></div></div>
+
+<script src="./game.js"></script>
+</body>
+</html>
