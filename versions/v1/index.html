@@ -25,7 +25,7 @@
   </div>
 
   <div id="levelModal" class="modal-wrap hidden"><div class="modal"><div class="modal-head"><h2>升级三选一</h2><p>新攻击按稀有度获得初始权重；重复选择则进一步提高抽取概率。</p></div><div id="choices" class="choices"></div><div id="rerollSlot"></div></div></div>
-  <div id="pauseModal" class="modal-wrap hidden"><div class="modal result pause-panel"><div class="eyebrow">牌局暂停</div><h2>PAUSED</h2><p>当前齐射配置</p><div class="pause-slot-head"><span>抽取槽位</span><b id="pauseDrawMeta">2 SLOT</b></div><div id="pauseSlots"></div><div class="pause-rule">每个槽位每轮抽取1张攻击；同轮优先不重复。击败Boss或获得相关被动可增加槽位。</div><button id="resumeBtn" class="primary">继续战斗 <small>ESC</small></button></div></div>
+  <div id="pauseModal" class="modal-wrap hidden"><div class="modal result pause-panel"><div class="eyebrow">牌局暂停</div><h2>PAUSED</h2><div class="pause-overview"><section><div class="pause-slot-head"><span>抽取槽位</span><b id="pauseDrawMeta">2 SLOTS</b></div><div id="pauseSlots"></div><div class="pause-rule">每个槽位都从完整攻击池独立抽取，因此同一轮可以重复。击败Boss或获得相关被动可增加槽位。</div></section><section class="pause-side"><h3>角色属性</h3><div id="pauseStats" class="pause-stats"></div><h3>已选被动</h3><div id="pausePassives" class="pause-passives"></div></section></div><button id="resumeBtn" class="primary">继续战斗 <small>ESC</small></button></div></div>
   <div id="resultModal" class="modal-wrap hidden"><div class="modal result"><div class="eyebrow" id="resultEyebrow">牌局结束</div><h2 id="resultTitle">再接再厉</h2><p id="resultStats"></p><button id="againBtn" class="primary">返回版本选择</button></div></div>
 
 <script src="./game.js"></script>
