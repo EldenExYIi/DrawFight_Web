@@ -57,7 +57,7 @@
   function newGame(){
     return {running:true,paused:false,choosing:false,ended:false,time:0,duration:1800,timeScale:1,kills:0,bosses:0,bossKills:0,lastAttack:0,lastSpawn:0,screenShake:0,warning:0,
       p:{x:W/2,y:H/2,r:14,hp:100,maxHp:100,speed:235,interval:1.1,damage:1,magnet:130,armor:0,draws:2,repeat:0,luck:0,rareBias:0,pierce:0,area:1,crit:.05,healChance:0,rerolls:0,execute:0,inv:0,level:1,xp:0,nextXp:5},
-      deck:[{id:'bolt',weight:rarity.common.baseWeight,level:1},{id:'nova',weight:rarity.common.baseWeight,level:1}],passiveLevels:{},enemies:[],shots:[],effects:[],gems:[],particles:[],texts:[],keys:{},lastCard:null,lastHand:[],pendingLevels:0,upgradeOptions:[]};
+      deck:[{id:'bolt',weight:rarity.common.baseWeight,level:1},{id:'nova',weight:rarity.common.baseWeight,level:1}],passiveLevels:{},enemies:[],shots:[],effects:[],gems:[],particles:[],texts:[],castQueue:[],keys:{},lastCard:null,lastHand:[],pendingLevels:0,upgradeOptions:[]};
   }
   function start(){game=newGame();$('#resultModal').classList.add('hidden');last=performance.now();updateHud();requestAnimationFrame(loop)}
   $('#againBtn').onclick=()=>{location.href='../../index.html'};
@@ -83,17 +83,20 @@
     let dx=(g.keys.d||g.keys.arrowright?1:0)-(g.keys.a||g.keys.arrowleft?1:0),dy=(g.keys.s||g.keys.arrowdown?1:0)-(g.keys.w||g.keys.arrowup?1:0);if(dx||dy){const l=Math.hypot(dx,dy);p.x+=dx/l*p.speed*dt;p.y+=dy/l*p.speed*dt}p.x=clamp(p.x,p.r,W-p.r);p.y=clamp(p.y,p.r,H-p.r);p.inv-=dt;
     const spawnRate=Math.max(.13,.78-g.time/2100);g.lastSpawn+=dt;while(g.lastSpawn>spawnRate){g.lastSpawn-=spawnRate;enemyAtEdge(Math.random()<Math.min(.18,.02+g.time/4200)?'elite':'normal')}
     g.lastAttack+=dt;while(g.lastAttack>=p.interval){g.lastAttack-=p.interval;drawRound()}
-    updateEnemies(dt);updateShots(dt);updateEffects(dt);updateGems(dt);updateParticles(dt);g.screenShake=Math.max(0,g.screenShake-dt*18);
+    updateCastQueue(dt);updateEnemies(dt);updateShots(dt);updateEffects(dt);updateGems(dt);updateParticles(dt);g.screenShake=Math.max(0,g.screenShake-dt*18);
   }
   function drawRound(){
-    const hand=[];
+    const hand=[],occurrences=new Map();
     for(let i=0;i<game.p.draws;i++){
       const result=drawCard(game.deck),repeated=Math.random()<game.p.repeat;
-      cast(result.attack);if(repeated)cast(result.attack);
+      const id=result.attack.id,count=occurrences.get(id)||0,delay=count*.12;
+      occurrences.set(id,count+1);queueCast(result.attack,delay);if(repeated)queueCast(result.attack,delay+.07);
       hand.push({...result,repeated});
     }
     showDrawHand(hand);
   }
+  function queueCast(attack,delay){if(delay<=0)cast(attack);else game.castQueue.push({attack,delay})}
+  function updateCastQueue(dt){for(let i=game.castQueue.length-1;i>=0;i--){const item=game.castQueue[i];item.delay-=dt;if(item.delay<=0){cast(item.attack);game.castQueue.splice(i,1)}}}
   function effectiveWeight(card){const a=attackMap[card.id];return card.weight*(1+game.p.rareBias*rarityDrawFactor[a.r])}
   function drawCard(pool){const total=pool.reduce((s,c)=>s+effectiveWeight(c),0);let n=Math.random()*total,c=pool[0];for(const d of pool){n-=effectiveWeight(d);if(n<=0){c=d;break}}const drawn=attackMap[c.id];let attack=drawn;if(drawn.kind==='echo'&&game.lastCard&&game.lastCard.kind!=='echo')attack=game.lastCard;else if(drawn.kind!=='echo')game.lastCard=drawn;return {drawn,attack}}
   function showDrawHand(hand){game.lastHand=hand;const el=$('#drawHand');el.innerHTML=hand.map((item,i)=>{const a=item.drawn,rank=rarity[a.r],copy=item.attack!==a?` → ${item.attack.icon}`:'';return `<div class="hand-card${item.repeated?' repeat':''}" style="--card-color:${rank.color};animation-delay:${i*.045}s"><span>${a.icon}${copy}</span><b>${a.name}</b></div>`}).join('')}
